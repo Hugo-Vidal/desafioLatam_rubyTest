@@ -1,18 +1,19 @@
 require 'uri'
 require 'net/http'
 require 'json'
+require 'openssl'
 
-def nasa_data_request(adress, api_key = 'DEMO_KEY')
+def request(adress, api_key = 'DEMO_KEY')
     url = URI(adress+api_key)
     http = Net::HTTP.new(url.host, url.port)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
-    nasa_data_request = Net::HTTP::Get.new(url)
-    nasa_data_request["cache-control"] = 'no-cache'
-    nasa_data_request["Postman-Token"] = '1dfd61a9-ce7b-4481-9339-9882428ed9ae'
+    request = Net::HTTP::Get.new(url)
+    request["cache-control"] = 'no-cache'
+    request["Postman-Token"] = '1dfd61a9-ce7b-4481-9339-9882428ed9ae'
     
-    response = http.request(nasa_data_request)
+    response = http.request(request)
     JSON.parse response.read_body
 end
 
@@ -51,6 +52,6 @@ def photos_count(data_nasa_clean)
     return photos_camera
 end
 
-data_nasa_clean = nasa_data_request('https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=1000&api_key=', 'rtPRBo7pzcPM0ABPbzPRxNMDHEUU0KBiWCSMht2d')
+data_nasa_clean = request('https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=1000&api_key=', 'rtPRBo7pzcPM0ABPbzPRxNMDHEUU0KBiWCSMht2d')
 photos_count(data_nasa_clean)
 build_web_page(data_nasa_clean, 10)
